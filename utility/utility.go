@@ -1,36 +1,15 @@
 package utility
 
 import (
-	"crypto/rand"
-	"math/big"
-
 	"github.com/jinzhu/gorm"
-	"gitlab.com/shitposting/shitposting-bot/database/entities"
+	"gitlab.com/shitposting/discord-random/database/entities"
 )
 
-func NewDiscordMeme(db *gorm.DB) string {
-	var meme []entities.Post
+// GetRandomMessageFileID selects a random file id from the database
+func GetRandomMessageFileID(db *gorm.DB) string {
 
-	var count int
-	db.Not("posted_at", "NULL").Find(&meme).Count(&count)
-	max := int64(count)
-
-	db.Where("id = ?", getRand(max)).First(&meme)
-
-	if len(meme) != 0 {
-		return meme[0].Media
-	}
-
-	return ""
-}
-
-// getRand generates a random number
-func getRand(max int64) (random int) {
-	nBig, err := rand.Int(rand.Reader, big.NewInt(max))
-	if err != nil {
-		return
-	}
-	random = int(nBig.Int64())
-
-	return
+	var meme entities.Post
+	// SELECT message_id FROM `posts`  WHERE NOT (posted_at IS NULL OR message_id = 0) ORDER BY rand(),`posts`.`id` ASC LIMIT 1
+	db.Select("media").Not("posted_at IS NULL OR message_id = 0").Order("rand()").First(&meme)
+	return meme.Media
 }

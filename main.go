@@ -15,10 +15,10 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"gitlab.com/shitposting/bots/discord-random/utility"
+	"gitlab.com/shitposting/discord-random/utility"
 	"gitlab.com/shitposting/telegram-bot-api"
 
-	conf "gitlab.com/shitposting/bots/discord-random/config"
+	conf "gitlab.com/shitposting/discord-random/config"
 )
 
 var (
@@ -109,7 +109,7 @@ func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.ToLower(m.Content) == "random" {
 
-		fileid := utility.NewDiscordMeme(db)
+		fileid := utility.GetRandomMessageFileID(db)
 
 		path, err := utility.GetFile(bot, fileid)
 		if err != nil {

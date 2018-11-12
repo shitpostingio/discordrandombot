@@ -10,6 +10,7 @@ import (
 	"gitlab.com/shitposting/telegram-bot-api"
 )
 
+// GetFile downloads the selected meme
 func GetFile(bot *tgbotapi.BotAPI, fileID string) (filePath string, err error) {
 
 	imageDownloadURL, err := bot.GetFileDirectURL(fileID)
