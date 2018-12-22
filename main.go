@@ -40,6 +40,8 @@ var (
 
 	//db is a pointer to our GORM connection to the database
 	db *gorm.DB
+
+	bot *tgbotapi.BotAPI
 )
 
 func main() {
@@ -54,7 +56,7 @@ func main() {
 	}
 
 	//telegram bot
-	bot, err := tgbotapi.NewBotAPI(config.TelegramTokenBot)
+	bot, err = tgbotapi.NewBotAPI(config.TelegramTokenBot)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -94,7 +96,7 @@ func main() {
 	dg.Close()
 }
 
-func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate, bot *tgbotapi.BotAPI, db *gorm.DB) {
+func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages created by the bot itself
 	if m.Author.ID == s.State.User.ID {
