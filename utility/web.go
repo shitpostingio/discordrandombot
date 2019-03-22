@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"gitlab.com/shitposting/telegram-bot-api"
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 // GetFile downloads the selected meme
@@ -26,8 +26,6 @@ func GetFile(bot *tgbotapi.BotAPI, fileID string) (filePath string, err error) {
 }
 
 func buildPath(fileid string) string {
-
-	fmt.Println(fileid)
 
 	switch {
 	case strings.HasPrefix(fileid, "BAAD"):
