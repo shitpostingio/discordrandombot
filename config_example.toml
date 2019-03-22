@@ -1,0 +1,11 @@
+#Discord token
+DiscordTokenBot = ""
+
+#Telegram token
+TelegramTokenBot = ""
+
+#Database stuff
+DatabaseName = ""
+DatabaseUsername = ""
+DatabasePassword = ""
+DatabaseAddress = ""
