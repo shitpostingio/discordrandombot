@@ -18,6 +18,8 @@ import (
 	"gitlab.com/shitposting/discord-random/utility"
 
 	conf "gitlab.com/shitposting/discord-random/config"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var (
