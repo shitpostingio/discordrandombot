@@ -9,7 +9,13 @@ import (
 // Config is the bot configuration representation, read
 // from a configuration file.
 type Config struct {
-	DiscordTokenBot string
+	DiscordTokenBot  string
+	TelegramTokenBot string
+
+	DatabaseName     string
+	DatabaseUsername string
+	DatabasePassword string
+	DatabaseAddress  string
 }
 
 // ReadConfig loads the values from the config file

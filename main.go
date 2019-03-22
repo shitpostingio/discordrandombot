@@ -15,10 +15,11 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
-	"gitlab.com/shitposting/bots/discord-random/utility"
-	"gitlab.com/shitposting/telegram-bot-api"
+	"gitlab.com/shitposting/discord-random/utility"
 
-	conf "gitlab.com/shitposting/bots/discord-random/config"
+	conf "gitlab.com/shitposting/discord-random/config"
+
+	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var (
@@ -41,13 +42,7 @@ var (
 	//db is a pointer to our GORM connection to the database
 	db *gorm.DB
 
-	databaseUsername = ""
-
-	databasePassword = ""
-
-	databaseAddress = "127.0.0.1:3306"
-
-	databaseName = ""
+	bot *tgbotapi.BotAPI
 )
 
 func main() {
@@ -61,6 +56,20 @@ func main() {
 		log.Fatal(err)
 	}
 
+	//telegram bot
+	bot, err = tgbotapi.NewBotAPI(config.TelegramTokenBot)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	bot.Debug = false
+
+	// setting up database connection
+	db, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4,utf8&parseTime=True", config.DatabaseUsername, config.DatabasePassword, config.DatabaseAddress, config.DatabaseName))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + config.DiscordTokenBot)
 	if err != nil {
@@ -69,7 +78,7 @@ func main() {
 	}
 
 	// Register the messageCreate func as a callback for MessageCreate events.
-	dg.AddHandler(messageCreate)
+	dg.AddHandler(handleMessages)
 
 	// Open a websocket connection to Discord and begin listening.
 	err = dg.Open()
@@ -88,28 +97,16 @@ func main() {
 	dg.Close()
 }
 
-func messageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
+func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	// Ignore all messages created by the bot itself
 	if m.Author.ID == s.State.User.ID {
 		return
 	}
 
-	bot, err := tgbotapi.NewBotAPI("")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bot.Debug = false
-
-	db, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4,utf8&parseTime=True", databaseUsername, databasePassword, databaseAddress, databaseName))
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	if strings.ToLower(m.Content) == "random" {
 
-		fileid := utility.NewDiscordMeme(db)
+		fileid := utility.GetRandomFileID(db)
 
 		path, err := utility.GetFile(bot, fileid)
 		if err != nil {
