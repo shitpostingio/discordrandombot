@@ -16,7 +16,6 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 
 	"gitlab.com/shitposting/discord-random/utility"
-	"gitlab.com/shitposting/telegram-bot-api"
 
 	conf "gitlab.com/shitposting/discord-random/config"
 )

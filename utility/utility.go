@@ -5,7 +5,7 @@ import (
 	"gitlab.com/shitposting/tg-random-bot/database/entities"
 )
 
-//GetRandomMessageID returns a random file_id from the database
+//GetRandomFileID returns a random file_id from the database
 func GetRandomFileID(db *gorm.DB) string {
 
 	var meme entities.Post
