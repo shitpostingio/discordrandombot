@@ -18,8 +18,6 @@ import (
 	"gitlab.com/shitposting/discord-random/utility"
 
 	conf "gitlab.com/shitposting/discord-random/config"
-
-	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api"
 )
 
 var (
@@ -41,8 +39,6 @@ var (
 
 	//db is a pointer to our GORM connection to the database
 	db *gorm.DB
-
-	bot *tgbotapi.BotAPI
 )
 
 func main() {
@@ -55,14 +51,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//telegram bot
-	bot, err = tgbotapi.NewBotAPI(config.TelegramTokenBot)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	bot.Debug = false
 
 	// setting up database connection
 	db, err = gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s?charset=utf8mb4,utf8&parseTime=True", config.DatabaseUsername, config.DatabasePassword, config.DatabaseAddress, config.DatabaseName))
@@ -106,13 +94,7 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.ToLower(m.Content) == "random" {
 
-		fileid := utility.GetRandomFileID(db)
-
-		path, err := utility.GetFile(bot, fileid)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "Failed, rip")
-			return
-		}
+		path := fmt.Sprintf("%s/%s.jpg", config.MemeFolder, utility.GetRandomMeme(db))
 
 		pic, err := os.Open(path)
 		if err != nil {

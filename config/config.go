@@ -10,7 +10,7 @@ import (
 // from a configuration file.
 type Config struct {
 	DiscordTokenBot  string
-	TelegramTokenBot string
+	MemeFolder       string
 
 	DatabaseName     string
 	DatabaseUsername string
