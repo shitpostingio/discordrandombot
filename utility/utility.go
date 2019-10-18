@@ -1,17 +1,39 @@
 package utility
 
 import (
-	"github.com/jinzhu/gorm"
-	"gitlab.com/shitposting/discord-random/entities"
+	"fmt"
+	"io"
+	"net/http"
+	"os"
 )
 
-//GetRandomFileID returns a random file_id from the database
-func GetRandomMeme(db *gorm.DB) string {
+//downloadFile downloads a file using a GET http request
+func DownloadFile(filepath string, url string) (err error) {
 
-	var meme entities.Post
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
 
-	// SELECT message_id FROM `posts`  WHERE NOT (posted_at IS NULL OR message_id = 0) ORDER BY rand(),`posts`.`id` ASC LIMIT 1
-	db.Select("file_id").Not("posted_at IS NULL OR message_id = 0").Order("rand()").First(&meme)
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
 
-	return meme.FileID
+	// Check server response
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("bad status: %s", resp.Status)
+	}
+
+	// Writer the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
