@@ -28,7 +28,7 @@ func envSetup() error {
 
 	memesEndpoint, ok = os.LookupEnv("API_ENDPOINT")
 	if memesEndpoint == "" || !ok {
-		memesEndpoint = "https://localhost:34378"
+		memesEndpoint = "http://localhost:34378"
 	}
 
 	return nil
