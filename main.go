@@ -11,7 +11,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/bwmarrin/discordgo"
-	"gitlab.com/shitposting/discord-random/utility"
 	"gitlab.com/shitposting/memesapi/rest/client"
 )
 
@@ -42,7 +41,7 @@ func main() {
 	}
 
 	// Wait here until CTRL-C or other term signal is received.
-	fmt.Printf("Bot is now running.")
+	fmt.Println("Bot is now running.")
 
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt, os.Kill)
@@ -63,21 +62,16 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 		meme, err := mClient.Random()
 		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "error")
+			s.ChannelMessageSend(m.ChannelID, "could not get random meme")
 		}
 
-		err = utility.DownloadFile(meme.Data.Filename, meme.Data.URL)
+		file, err := os.Open(meme.Data.URL)
 		if err != nil {
-			log.Fatal(err)
-		}
-
-		file, err := os.Open(meme.Data.Filename)
-		if err != nil {
-			log.Fatal(err)
+			s.ChannelMessageSend(m.ChannelID, "can't send meme")
 		}
 
 		s.ChannelFileSend(m.ChannelID, meme.Data.Filename, file)
 
-		os.Remove(meme.Data.Filename)
+		defer file.Close()
 	}
 }
