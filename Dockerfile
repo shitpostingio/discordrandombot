@@ -42,7 +42,14 @@ FROM debian:buster
 COPY --from=builder /user/group /user/passwd /etc/
 
 # Copy the built executable
-COPY --from=builder /go/bin/discord-random .
+COPY --from=builder /go/bin/discord-random /home/random/discord-random
+
+# Install dependencies and create home directory
+RUN apt update && apt install -y ca-certificates; \ 
+    chown -R random /home/random
+
+# Set the workdir
+WORKDIR /home/random
 
 # Perform any further action as an unprivileged user.
 USER random:random
