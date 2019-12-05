@@ -3,8 +3,12 @@ image: golang:buster
 variables:
   REPO_NAME: "gitlab.com/shitposting/discord-random"
   GOPRIVATE: "gitlab.com/shitposting"
+  NETRC: "$GOPATH/src/$REPO_NAME"
 
 before_script:
+  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
+  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
+  - cd $GOPATH/src/$REPO_NAME
   - printf "machine gitlab.com\n\
     login ${ACCESS_TOKEN_USR}\n\
     password ${ACCESS_TOKEN_PWD}\n\
@@ -13,9 +17,6 @@ before_script:
     login ${ACCESS_TOKEN_USR}\n\
     password ${ACCESS_TOKEN_PWD}\n"\
     >> .netrc
-  - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
-  - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
-  - cd $GOPATH/src/$REPO_NAME
 
 stages:
   - format
