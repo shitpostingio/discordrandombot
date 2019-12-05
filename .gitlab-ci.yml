@@ -84,7 +84,9 @@ docker-build:
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG"
   except:
     - master
-  <<: *exclude
+    changes:
+      - README.md
+      - .gitignore
 
 prod-deploy:
   image: debian:buster
