@@ -93,7 +93,7 @@ prod-deploy:
   image: debian:buster
   stage: deploy
   before_script:
-    - apt update && apt install sshpass
+    - apt update && apt install -y sshpass
   script:
     - sshpass -V
     - export SSHPASS=$USER_PASS
