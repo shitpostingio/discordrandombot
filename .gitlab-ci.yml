@@ -2,12 +2,12 @@ image: golang:buster
 
 variables:
   REPO_NAME: "gitlab.com/shitposting/discord-random"
+  GOPRIVATE: "gitlab.com/shitposting"
 
 before_script:
   - mkdir -p $GOPATH/src/$(dirname $REPO_NAME)
   - ln -svf $CI_PROJECT_DIR $GOPATH/src/$REPO_NAME
   - cd $GOPATH/src/$REPO_NAME
-  - export GOPRIVATE=gitlab.com/shitposting
   - printf "machine gitlab.com\n\
     login ${ACCESS_TOKEN_USR}\n\
     password ${ACCESS_TOKEN_PWD}\n\
