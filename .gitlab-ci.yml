@@ -15,6 +15,7 @@ before_script:
     machine api.gitlab.com\n\
     login ${ACCESS_TOKEN_USR}\n\
     password ${ACCESS_TOKEN_PWD}\n"\
+    >> .netrc
 
 stages:
   - format
