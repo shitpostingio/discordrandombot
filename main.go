@@ -65,13 +65,32 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 			s.ChannelMessageSend(m.ChannelID, "could not get random meme")
 		}
 
-		file, err := os.Open(meme.Data.URL)
+		var memeFile *os.File
+
+		if strings.HasPrefix(meme.Data.URL, "https") { // Download meme and open it
+			err := downloadFile(meme.Data.Filename, meme.Data.URL)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "unable to save meme")
+				log.Fatal(err)
+			}
+			memeFile, err = os.Open(meme.Data.Filename)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+			}
+
+			defer os.Remove(meme.Data.Filename)
+		} else { // if no https prefix we have a local path
+			memeFile, err = os.Open(meme.Data.URL)
+			if err != nil {
+				s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+			}
+		}
+
+		_, err = s.ChannelFileSend(m.ChannelID, meme.Data.Filename, memeFile)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, "can't send meme")
 		}
 
-		s.ChannelFileSend(m.ChannelID, meme.Data.Filename, file)
-
-		defer file.Close()
+		defer memeFile.Close()
 	}
 }
