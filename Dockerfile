@@ -26,9 +26,6 @@ RUN chmod 600 /root/.netrc
 # Set the Current Working Directory inside the container
 WORKDIR $GOPATH/src/gitlab.com/shitposting/discord-random
 
-# Set goprivate env var
-ENV goprivate=gitlab.com/shitposting
-
 # Import the code from the context.
 COPY . .
 
