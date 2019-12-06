@@ -101,6 +101,6 @@ prod-deploy:
     - sshpass -e ssh -p $PORT -o stricthostkeychecking=no $USER_ID@$HOSTNAME docker pull registry.gitlab.com/shitposting/discord-random:latest
     - sshpass -e ssh -p $PORT -o stricthostkeychecking=no $USER_ID@$HOSTNAME docker stop $DOCKER_CONT_NAME
     - sshpass -e ssh -p $PORT -o stricthostkeychecking=no $USER_ID@$HOSTNAME docker rm $DOCKER_CONT_NAME
-    - sshpass -e ssh -p $PORT -o stricthostkeychecking=no $USER_ID@$HOSTNAME docker run -d -e DISCORD_TOKEN="$DISCORD_TOKEN" -e API_ENDPOINT="$RANDOMAPI_ENDPOINT" --name $DOCKER_CONT_NAME registry.gitlab.com/shitposting/discord-random
+    - sshpass -e ssh -p $PORT -o stricthostkeychecking=no $USER_ID@$HOSTNAME docker run --restart unless-stopped -d -e DISCORD_TOKEN="$DISCORD_TOKEN" -e API_ENDPOINT="$RANDOMAPI_ENDPOINT" --name $DOCKER_CONT_NAME registry.gitlab.com/shitposting/discord-random
   when: manual
   <<: *exclude
