@@ -10,7 +10,9 @@ import (
 var (
 	discordToken string
 
-	memesEndpoint string
+	apiEndpoint string
+
+	apiPlatform string
 
 	//err is declared here for functions that return an error as the second value
 	err error
@@ -26,9 +28,14 @@ func envSetup() error {
 		log.Fatalf("Discord token bot is not optional!")
 	}
 
-	memesEndpoint, ok = os.LookupEnv("API_ENDPOINT")
-	if memesEndpoint == "" || !ok {
-		memesEndpoint = "http://localhost:34378"
+	apiEndpoint, ok = os.LookupEnv("API_ENDPOINT")
+	if apiEndpoint == "" || !ok {
+		apiEndpoint = "http://localhost:34378"
+	}
+
+	apiPlatform, ok = os.LookupEnv("API_PLATFORM")
+	if apiPlatform == "" || !ok {
+		apiPlatform = "discordrandom"
 	}
 
 	return nil

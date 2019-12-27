@@ -21,7 +21,7 @@ func main() {
 	}
 
 	// Initialize memes api client
-	mClient = client.New(memesEndpoint)
+	mClient = client.New(apiEndpoint, apiPlatform)
 
 	// Create a new Discord session using the provided bot token.
 	dg, err := discordgo.New("Bot " + discordToken)
@@ -60,7 +60,7 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.ToLower(m.Content) == "random" {
 
-		meme, err := mClient.Random()
+		meme, err := mClient.Random("", "", "", m.Author.ID)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, "could not get random meme")
 		}
