@@ -65,7 +65,7 @@ docker-build-master:
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" registry.gitlab.com
   script:
-    - docker build --pull -t "$CI_REGISTRY_IMAGE" --build-arg SSH_PRIV=${SSH_PRIVATE_KEY} --build-arg SSH_PUB=${SSH_PUBLIC_KEY} .
+    - docker build --pull -t "$CI_REGISTRY_IMAGE" --build-arg SSH_PRIV="${SSH_PRIVATE_KEY}" --build-arg SSH_PUB="${SSH_PUBLIC_KEY}" .
     - docker push "$CI_REGISTRY_IMAGE"
   only:
     - master
