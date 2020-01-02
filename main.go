@@ -14,6 +14,12 @@ import (
 	"gitlab.com/shitposting/memesapi/rest/client"
 )
 
+const (
+	//MaxRetries is the maximum amount of attempts to
+	//forward that the bot should make
+	MaxRetries = 3
+)
+
 func main() {
 
 	if err := envSetup(); err != nil {
@@ -60,37 +66,43 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.ToLower(m.Content) == "random" {
 
-		meme, err := mClient.Random("", "", "", m.Author.ID)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "could not get random meme")
-		}
+		for i := 0; i < MaxRetries; i++ {
 
-		var memeFile *os.File
-
-		if strings.HasPrefix(meme.Data.URL, "https") { // Download meme and open it
-			err := downloadFile(meme.Data.Filename, meme.Data.URL)
+			meme, err := mClient.Random("", "", "", m.Author.ID)
 			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, "unable to save meme")
-				log.Fatal(err)
-			}
-			memeFile, err = os.Open(meme.Data.Filename)
-			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+				s.ChannelMessageSend(m.ChannelID, "could not get random meme")
 			}
 
-			defer os.Remove(meme.Data.Filename)
-		} else { // if no https prefix we have a local path
-			memeFile, err = os.Open(meme.Data.URL)
+			var memeFile *os.File
+
+			if strings.HasPrefix(meme.Data.URL, "https") { // Download meme and open it
+				err := downloadFile(meme.Data.Filename, meme.Data.URL)
+				if err != nil {
+					s.ChannelMessageSend(m.ChannelID, "unable to save meme")
+					log.Fatal(err)
+				}
+				memeFile, err = os.Open(meme.Data.Filename)
+				if err != nil {
+					s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+				}
+
+				defer os.Remove(meme.Data.Filename)
+			} else { // if no https prefix we have a local path
+				memeFile, err = os.Open(meme.Data.URL)
+				if err != nil {
+					s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+				}
+			}
+
+			_, err = s.ChannelFileSend(m.ChannelID, meme.Data.Filename, memeFile)
 			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+				s.ChannelMessageSend(m.ChannelID, "can't send meme")
+			}
+
+			defer memeFile.Close()
+			if err == nil {
+				return
 			}
 		}
-
-		_, err = s.ChannelFileSend(m.ChannelID, meme.Data.Filename, memeFile)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, "can't send meme")
-		}
-
-		defer memeFile.Close()
 	}
 }
