@@ -78,25 +78,24 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 			if strings.HasPrefix(meme.Data.URL, "https") { // Download meme and open it
 				err := downloadFile(meme.Data.Filename, meme.Data.URL)
 				if err != nil {
-					s.ChannelMessageSend(m.ChannelID, "unable to save meme")
-					log.Fatal(err)
+					continue
 				}
 				memeFile, err = os.Open(meme.Data.Filename)
 				if err != nil {
-					s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+					continue
 				}
 
 				defer os.Remove(meme.Data.Filename)
 			} else { // if no https prefix we have a local path
 				memeFile, err = os.Open(meme.Data.URL)
 				if err != nil {
-					s.ChannelMessageSend(m.ChannelID, "unable to open meme")
+					continue
 				}
 			}
 
 			_, err = s.ChannelFileSend(m.ChannelID, meme.Data.Filename, memeFile)
 			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, "can't send meme")
+				continue
 			}
 
 			defer memeFile.Close()
@@ -104,5 +103,7 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 				return
 			}
 		}
+
+		s.ChannelMessageSend(m.ChannelID, "Unable to send meme, try again later")
 	}
 }
