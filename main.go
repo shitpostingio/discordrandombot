@@ -70,7 +70,7 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			meme, err := mClient.Random("", "", "", m.Author.ID)
 			if err != nil {
-				s.ChannelMessageSend(m.ChannelID, "could not get random meme")
+				continue
 			}
 
 			var memeFile *os.File
@@ -93,10 +93,17 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 				}
 			}
 
-			_, err = s.ChannelFileSend(m.ChannelID, meme.Data.Filename, memeFile)
-			if err != nil {
-				continue
+			mFile := discordgo.File{
+				Name:   meme.Data.Filename,
+				Reader: memeFile,
 			}
+
+			toSend := discordgo.MessageSend{
+				Content: fmt.Sprintf("Source: <https://t.me/shitpost/%d>", meme.Data.MessageID),
+				File:    &mFile,
+			}
+
+			s.ChannelMessageSendComplex(m.ChannelID, &toSend)
 
 			defer memeFile.Close()
 			if err == nil {
