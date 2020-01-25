@@ -75,31 +75,31 @@ func handleMessages(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 			var memeFile *os.File
 
-			if strings.HasPrefix(meme.Data.URL, "https") { // Download meme and open it
-				err := downloadFile(meme.Data.Filename, meme.Data.URL)
+			if strings.HasPrefix(meme.Meme.URL, "https") { // Download meme and open it
+				err := downloadFile(meme.Meme.Filename, meme.Meme.URL)
 				if err != nil {
 					continue
 				}
-				memeFile, err = os.Open(meme.Data.Filename)
+				memeFile, err = os.Open(meme.Meme.Filename)
 				if err != nil {
 					continue
 				}
 
-				defer os.Remove(meme.Data.Filename)
+				defer os.Remove(meme.Meme.Filename)
 			} else { // if no https prefix we have a local path
-				memeFile, err = os.Open(meme.Data.URL)
+				memeFile, err = os.Open(meme.Meme.URL)
 				if err != nil {
 					continue
 				}
 			}
 
 			mFile := discordgo.File{
-				Name:   meme.Data.Filename,
+				Name:   meme.Meme.Filename,
 				Reader: memeFile,
 			}
 
 			toSend := discordgo.MessageSend{
-				Content: fmt.Sprintf("Source: <https://t.me/shitpost/%d>", meme.Data.MessageID),
+				Content: fmt.Sprintf("Source: <https://t.me/shitpost/%d>", meme.Meme.MessageID),
 				File:    &mFile,
 			}
 
