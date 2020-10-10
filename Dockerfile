@@ -11,21 +11,8 @@ RUN mkdir /user && \
     echo 'random:x:65534:65534:random:/:' > /user/passwd && \
     echo 'random:x:65534:' > /user/group
 
-
-RUN eval $(ssh-agent -s); \
-    mkdir -p ~/.ssh;  \
-    echo "$SSH_PRIV" >> ~/.ssh/id_rsa; \
-    echo "$SSH_PUB" >> ~/.ssh/id_rsa.pub;  \
-    chmod 700 ~/.ssh;  \
-    chmod 600 ~/.ssh/id_rsa;  \
-    chmod 644 ~/.ssh/id_rsa.pub;  \
-    git config --global url.git@gitlab.com:.insteadOf https://gitlab.com/;  \
-    ssh-add ~/.ssh/id_rsa;  \
-    ssh-add -l;  \
-    ssh-keyscan -t rsa gitlab.com >> ~/.ssh/known_hosts;
-
 # Set the Current Working Directory inside the container
-WORKDIR $GOPATH/src/gitlab.com/shitposting/discord-random
+WORKDIR $GOPATH/src/github.com/shitpostingio/discordrandombot
 
 # Import the code from the context.
 COPY . .
@@ -40,7 +27,7 @@ FROM debian:buster
 COPY --from=builder /user/group /user/passwd /etc/
 
 # Copy the built executable
-COPY --from=builder /go/bin/discord-random /home/random/discord-random
+COPY --from=builder /go/bin/discordrandombot /home/random/discordrandombot
 
 # Install dependencies and create home directory
 RUN apt update && apt install -y ca-certificates; \ 
@@ -53,4 +40,4 @@ WORKDIR /home/random
 USER random:random
 
 # Run the compiled binary.
-CMD ["./discord-random"]
+CMD ["./discordrandombot"]

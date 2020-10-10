@@ -8,10 +8,8 @@ import (
 	"strings"
 	"syscall"
 
-	"golang.org/x/xerrors"
-
 	"github.com/bwmarrin/discordgo"
-	"gitlab.com/shitposting/memesapi/rest/client"
+	"github.com/shitpostingio/randomapi/rest/client"
 )
 
 const (
@@ -23,7 +21,7 @@ const (
 func main() {
 
 	if err := envSetup(); err != nil {
-		log.Fatal(xerrors.Errorf("cannot detect env: %w", err))
+		log.Fatal(fmt.Errorf("cannot detect env: %w", err))
 	}
 
 	// Initialize memes api client
